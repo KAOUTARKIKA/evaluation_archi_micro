@@ -1,7 +1,5 @@
 package com.tp;
 
-
-
 import com.tp.classes.Categorie;
 import com.tp.classes.Commande;
 import com.tp.classes.LigneCommandeProduit;
@@ -11,6 +9,8 @@ import com.tp.service.CommandeService;
 import com.tp.service.LigneCommandeService;
 import com.tp.service.ProduitService;
 import com.tp.util.HibernateUtil;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,6 +19,8 @@ import java.util.Date;
 public class TestApplication {
 
     public static void main(String[] args) {
+        Transaction transaction = null;
+
         CategorieService categorieService = new CategorieService();
         ProduitService produitService = new ProduitService();
         CommandeService commandeService = new CommandeService();
@@ -26,6 +28,10 @@ public class TestApplication {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
         try {
+            // Démarrer une session et une transaction
+            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+
             System.out.println("==============================================");
             System.out.println("     APPLICATION DE GESTION DE STOCK");
             System.out.println("==============================================\n");
@@ -72,6 +78,7 @@ public class TestApplication {
             commandeService.create(cmd2);
             commandeService.create(cmd3);
             System.out.println("✓ 3 commandes créées avec succès\n");
+
             System.out.println("4. CRÉATION DES LIGNES DE COMMANDE");
             System.out.println("----------------------------");
             LigneCommandeProduit lcp1 = new LigneCommandeProduit(p1, cmd1, 7);
@@ -88,6 +95,13 @@ public class TestApplication {
             ligneCommandeService.create(lcp5);
             ligneCommandeService.create(lcp6);
             System.out.println("✓ 6 lignes de commande créées avec succès\n");
+
+            // Commit de la transaction
+            transaction.commit();
+
+            // Nouvelle session et transaction pour les lectures
+            Session newSession = HibernateUtil.getSessionFactory().getCurrentSession();
+            transaction = newSession.beginTransaction();
 
             System.out.println("\n==============================================");
             System.out.println("5. TEST : PRODUITS PAR CATÉGORIE");
@@ -106,19 +120,24 @@ public class TestApplication {
             System.out.println("7. TEST : PRODUITS D'UNE COMMANDE");
             System.out.println("==============================================");
             produitService.afficherProduitsCommande(cmd1);
+
             System.out.println("\n==============================================");
             System.out.println("8. TEST : PRODUITS PRIX > 100 DH (Requête nommée)");
             System.out.println("==============================================");
             produitService.afficherProduitsSuperieur100();
+
+            transaction.commit();
 
             System.out.println("\n==============================================");
             System.out.println("     TESTS TERMINÉS AVEC SUCCÈS !");
             System.out.println("==============================================\n");
 
         } catch (ParseException e) {
+            if (transaction != null) transaction.rollback();
             System.err.println("Erreur de format de date : " + e.getMessage());
             e.printStackTrace();
         } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             System.err.println("Erreur lors de l'exécution : " + e.getMessage());
             e.printStackTrace();
         } finally {

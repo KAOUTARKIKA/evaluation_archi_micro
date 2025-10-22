@@ -24,6 +24,9 @@
         <!-- Drop and re-create the database schema on startup -->
         <property name="hibernate.hbm2ddl.auto">update</property>
 
+        <!-- Thread context session -->
+        <property name="hibernate.current_session_context_class">thread</property>
+
         <!-- Mapped classes -->
         <mapping class="com.tp.classes.Categorie"/>
         <mapping class="com.tp.classes.Produit"/>

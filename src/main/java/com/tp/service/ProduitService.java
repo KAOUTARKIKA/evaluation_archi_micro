@@ -6,8 +6,7 @@ import com.tp.classes.LigneCommandeProduit;
 import com.tp.classes.Produit;
 import com.tp.dao.IDao;
 import com.tp.util.HibernateUtil;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
 import java.text.SimpleDateFormat;
@@ -16,72 +15,47 @@ import java.util.List;
 
 public class ProduitService implements IDao<Produit> {
 
+    private SessionFactory sessionFactory;
+
+    public ProduitService() {
+        this.sessionFactory = HibernateUtil.getSessionFactory();
+    }
+
     @Override
     public boolean create(Produit o) {
-        Transaction tx = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-            session.save(o);
-            tx.commit();
-            return true;
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();
-            e.printStackTrace();
-            return false;
-        }
+        sessionFactory.getCurrentSession().save(o);
+        return true;
     }
 
     @Override
     public boolean update(Produit o) {
-        Transaction tx = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-            session.update(o);
-            tx.commit();
-            return true;
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();
-            e.printStackTrace();
-            return false;
-        }
+        sessionFactory.getCurrentSession().update(o);
+        return true;
     }
 
     @Override
     public boolean delete(Produit o) {
-        Transaction tx = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-            session.delete(o);
-            tx.commit();
-            return true;
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();
-            e.printStackTrace();
-            return false;
-        }
+        sessionFactory.getCurrentSession().delete(o);
+        return true;
     }
 
     @Override
     public Produit findById(int id) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.get(Produit.class, id);
-        }
+        return sessionFactory.getCurrentSession().get(Produit.class, id);
     }
 
     @Override
     public List<Produit> findAll() {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("FROM Produit", Produit.class).list();
-        }
+        return sessionFactory.getCurrentSession()
+                .createQuery("FROM Produit", Produit.class)
+                .list();
     }
 
     public List<Produit> findByCategorie(Categorie categorie) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Query<Produit> query = session.createQuery(
-                    "FROM Produit p WHERE p.categorie = :categorie", Produit.class);
-            query.setParameter("categorie", categorie);
-            return query.list();
-        }
+        Query<Produit> query = sessionFactory.getCurrentSession().createQuery(
+                "FROM Produit p WHERE p.categorie = :categorie", Produit.class);
+        query.setParameter("categorie", categorie);
+        return query.list();
     }
 
     public void afficherProduitsParCategorie(Categorie categorie) {
@@ -95,15 +69,13 @@ public class ProduitService implements IDao<Produit> {
     }
 
     public List<Produit> findProduitsEntreDeuxDates(Date dateDebut, Date dateFin) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Query<Produit> query = session.createQuery(
-                    "SELECT DISTINCT lcp.produit FROM LigneCommandeProduit lcp " +
-                            "WHERE lcp.commande.date BETWEEN :dateDebut AND :dateFin",
-                    Produit.class);
-            query.setParameter("dateDebut", dateDebut);
-            query.setParameter("dateFin", dateFin);
-            return query.list();
-        }
+        Query<Produit> query = sessionFactory.getCurrentSession().createQuery(
+                "SELECT DISTINCT lcp.produit FROM LigneCommandeProduit lcp " +
+                        "WHERE lcp.commande.date BETWEEN :dateDebut AND :dateFin",
+                Produit.class);
+        query.setParameter("dateDebut", dateDebut);
+        query.setParameter("dateFin", dateFin);
+        return query.list();
     }
 
     public void afficherProduitsEntreDeuxDates(Date dateDebut, Date dateFin) {
@@ -119,37 +91,34 @@ public class ProduitService implements IDao<Produit> {
     }
 
     public void afficherProduitsCommande(Commande commande) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Commande cmd = session.get(Commande.class, commande.getId());
-            SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
+        Commande cmd = sessionFactory.getCurrentSession().get(Commande.class, commande.getId());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
 
-            System.out.println("\nCommande : " + cmd.getId() +
-                    "\tDate : " + sdf.format(cmd.getDate()));
-            System.out.println("Liste des produits :");
-            System.out.println("Référence\tPrix\t\tQuantité");
-            System.out.println("----------------------------------------");
+        System.out.println("\nCommande : " + cmd.getId() +
+                "\tDate : " + sdf.format(cmd.getDate()));
+        System.out.println("Liste des produits :");
+        System.out.println("Référence\tPrix\t\tQuantité");
+        System.out.println("----------------------------------------");
 
-            Query<LigneCommandeProduit> query = session.createQuery(
-                    "FROM LigneCommandeProduit lcp WHERE lcp.commande.id = :commandeId",
-                    LigneCommandeProduit.class);
-            query.setParameter("commandeId", cmd.getId());
+        Query<LigneCommandeProduit> query = sessionFactory.getCurrentSession().createQuery(
+                "FROM LigneCommandeProduit lcp WHERE lcp.commande.id = :commandeId",
+                LigneCommandeProduit.class);
+        query.setParameter("commandeId", cmd.getId());
 
-            List<LigneCommandeProduit> lignes = query.list();
-            for (LigneCommandeProduit lcp : lignes) {
-                System.out.printf("%s\t\t%.0f DH\t\t%d\n",
-                        lcp.getProduit().getReference(),
-                        lcp.getProduit().getPrix(),
-                        lcp.getQuantite());
-            }
+        List<LigneCommandeProduit> lignes = query.list();
+        for (LigneCommandeProduit lcp : lignes) {
+            System.out.printf("%s\t\t%.0f DH\t\t%d\n",
+                    lcp.getProduit().getReference(),
+                    lcp.getProduit().getPrix(),
+                    lcp.getQuantite());
         }
     }
 
     public List<Produit> findByPrixSuperieur(float prix) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Query<Produit> query = session.createNamedQuery("Produit.findByPrixSuperieur", Produit.class);
-            query.setParameter("prix", prix);
-            return query.list();
-        }
+        Query<Produit> query = sessionFactory.getCurrentSession()
+                .createNamedQuery("Produit.findByPrixSuperieur", Produit.class);
+        query.setParameter("prix", prix);
+        return query.list();
     }
 
     public void afficherProduitsSuperieur100() {
