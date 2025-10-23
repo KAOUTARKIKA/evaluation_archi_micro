@@ -1,13 +1,13 @@
-package com.tp;
+package com.tp.ex1;
 
-import com.tp.classes.Categorie;
-import com.tp.classes.Commande;
-import com.tp.classes.LigneCommandeProduit;
-import com.tp.classes.Produit;
-import com.tp.service.CategorieService;
-import com.tp.service.CommandeService;
-import com.tp.service.LigneCommandeService;
-import com.tp.service.ProduitService;
+import com.tp.ex1.classes.Categorie;
+import com.tp.ex1.classes.Commande;
+import com.tp.ex1.classes.LigneCommandeProduit;
+import com.tp.ex1.classes.Produit;
+import com.tp.ex1.service.CategorieService;
+import com.tp.ex1.service.CommandeService;
+import com.tp.ex1.service.LigneCommandeService;
+import com.tp.ex1.service.ProduitService;
 import com.tp.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;

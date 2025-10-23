@@ -1,7 +1,7 @@
-package com.tp.service;
+package com.tp.ex1.service;
 
-import com.tp.classes.Commande;
-import com.tp.dao.IDao;
+import com.tp.ex1.classes.Commande;
+import com.tp.ex1.dao.IDao;
 import com.tp.util.HibernateUtil;
 import org.hibernate.SessionFactory;
 

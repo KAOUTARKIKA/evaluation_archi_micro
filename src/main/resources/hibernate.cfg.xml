@@ -27,10 +27,22 @@
         <!-- Thread context session -->
         <property name="hibernate.current_session_context_class">thread</property>
 
-        <!-- Mapped classes -->
-        <mapping class="com.tp.classes.Categorie"/>
-        <mapping class="com.tp.classes.Produit"/>
-        <mapping class="com.tp.classes.Commande"/>
-        <mapping class="com.tp.classes.LigneCommandeProduit"/>
+        <!-- Mapped classes - Exercice 1 -->
+        <mapping class="com.tp.ex1.classes.Categorie"/>
+        <mapping class="com.tp.ex1.classes.Produit"/>
+        <mapping class="com.tp.ex1.classes.Commande"/>
+        <mapping class="com.tp.ex1.classes.LigneCommandeProduit"/>
+
+        <!-- Mapped classes - Exercice 2 -->
+        <mapping class="com.tp.ex2.classes.Employe"/>
+        <mapping class="com.tp.ex2.classes.Projet"/>
+        <mapping class="com.tp.ex2.classes.Tache"/>
+        <mapping class="com.tp.ex2.classes.EmployeTache"/>
+
+        <!-- Mapped classes - Exercice 3 -->
+        <mapping class="com.tp.ex3.beans.Femme"/>
+        <mapping class="com.tp.ex3.beans.Homme"/>
+        <mapping class="com.tp.ex3.beans.Mariage"/>
+        <mapping class="com.tp.ex3.beans.Personne"/>
     </session-factory>
 </hibernate-configuration>

@@ -1,10 +1,10 @@
-package com.tp.service;
+package com.tp.ex1.service;
 
-import com.tp.classes.Categorie;
-import com.tp.classes.Commande;
-import com.tp.classes.LigneCommandeProduit;
-import com.tp.classes.Produit;
-import com.tp.dao.IDao;
+import com.tp.ex1.classes.Categorie;
+import com.tp.ex1.classes.Commande;
+import com.tp.ex1.classes.LigneCommandeProduit;
+import com.tp.ex1.classes.Produit;
+import com.tp.ex1.dao.IDao;
 import com.tp.util.HibernateUtil;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;

@@ -1,4 +1,4 @@
-package com.tp.classes;
+package com.tp.ex1.classes;
 
 import javax.persistence.*;
 import java.io.Serializable;
